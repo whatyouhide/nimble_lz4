@@ -1,0 +1,14 @@
+[package]
+name = "nimblelz4"
+version = "0.1.0"
+authors = []
+edition = "2018"
+
+[lib]
+name = "nimblelz4"
+path = "src/lib.rs"
+crate-type = ["cdylib"]
+
+[dependencies]
+rustler = "0.25.0"
+lz4_flex = { version = "0.9.0" }
