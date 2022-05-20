@@ -6,7 +6,8 @@ use rustler::types::binary::{Binary, OwnedBinary};
 use rustler::{Encoder, Env, Error, Term};
 
 #[rustler::nif]
-fn compress<'a>(env: Env<'a>, binary_to_compress: Binary) -> Result<Term<'a>, Error> {
+fn compress<'a>(env: Env<'a>, iolist_to_compress: Term<'a>) -> Result<Term<'a>, Error> {
+    let binary_to_compress: Binary = Binary::from_iolist(iolist_to_compress).unwrap();
     let compressed_slice = lz4_flex::compress(binary_to_compress.as_slice());
 
     let mut erl_bin: OwnedBinary = OwnedBinary::new(compressed_slice.len()).unwrap();

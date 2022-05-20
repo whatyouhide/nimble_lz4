@@ -3,11 +3,31 @@ defmodule NimbleLZ4Test do
   use ExUnitProperties
 
   property "compress + uncompress are circular" do
-    check all(binary <- binary()) do
+    check all binary <- binary() do
       assert {:ok, ^binary} =
                binary
                |> NimbleLZ4.compress()
                |> NimbleLZ4.decompress(byte_size(binary))
+    end
+  end
+
+  property "compress + uncompress are circular with iodata as input" do
+    check all iodata <- iodata() do
+      assert iodata
+             |> NimbleLZ4.compress()
+             |> NimbleLZ4.decompress(IO.iodata_length(iodata)) ==
+               {:ok, IO.iodata_to_binary(iodata)}
+    end
+  end
+
+  describe "compress/1" do
+    test "with binaries" do
+      assert NimbleLZ4.compress("foo") == "0foo"
+    end
+
+    test "with iodata" do
+      assert NimbleLZ4.compress([]) == "\0"
+      assert NimbleLZ4.compress([?f, [[[?o]]], "o"]) == "0foo"
     end
   end
 
