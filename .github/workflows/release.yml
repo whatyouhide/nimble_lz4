@@ -1,7 +1,7 @@
 name: Build precompiled NIFs
 
 env:
-  NIF_DIRECTORY: "native/nimble_lz4"
+  NIF_DIRECTORY: "native/nimblelz4"
 
 on:
   push:
@@ -15,7 +15,7 @@ defaults:
   run:
     # Sets the working dir for "run" scripts.
     # Note that this won't change the directory for actions (tasks with "uses").
-    working-directory: "./native/nimble_lz4"
+    working-directory: "native/nimblelz4"
 
 jobs:
   build_release:
