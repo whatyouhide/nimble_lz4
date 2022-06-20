@@ -21,7 +21,14 @@ defmodule NimbleLZ4 do
 
   """
 
-  use Rustler, otp_app: :nimble_lz4, crate: "nimblelz4"
+  version = Mix.Project.config()[:version]
+
+  use RustlerPrecompiled,
+    otp_app: :nimble_lz4,
+    crate: "nimblelz4",
+    base_url: "https://github.com/whatyouhide/nimble_lz4/releases/downloads/v#{version}",
+    force_build: System.get_env("NIMBLELZ4_FORCE_BUILD") == "true",
+    version: version
 
   @doc """
   Compresses the given binary.
