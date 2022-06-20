@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    name: Test (Elixir ${{matrix.elixir}} | Erlang/OTP ${{matrix.otp}})
+    runs-on: ubuntu-18.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - otp: 24.1
+            elixir: 1.13
+            lint: true
+          - otp: 23.0
+            elixir: 1.11.2
+
+    env:
+      GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      MIX_ENV: test
+
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@v2
+
+      - name: Install OTP and Elixir
+        uses: erlef/setup-beam@v1
+        with:
+          otp-version: ${{matrix.otp}}
+          elixir-version: ${{matrix.elixir}}
+
+      - name: Cache built dependencies
+        id: cache-deps
+        uses: actions/cache@v2
+        with:
+          path: |
+            deps
+            _build
+          key: ${{ runner.os }}-mix-otp${{ matrix.otp }}-elixir${{ matrix.elixir }}-${{ hashFiles('**/mix.lock') }}
+
+      - name: Install and compile dependencies
+        if: steps.cache-deps.outputs.cache-hit != 'true'
+        run: mix do deps.get --only test, deps.compile
+
+      - name: Check formatting
+        run: mix format --check-formatted
+        if: ${{matrix.lint}}
+
+      - name: Check no unused dependencies
+        run: mix deps.get && mix deps.unlock --check-unused
+        if: ${{matrix.lint == 'true' && steps.cache-deps.outputs.cache-hit != 'true'}}
+
+      - name: Compile with --warnings-as-errors
+        run: mix compile --warnings-as-errors
+        if: ${{matrix.lint}}
+
+      - name: Run tests
+        run: mix test --trace
