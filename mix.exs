@@ -1,11 +1,13 @@
 defmodule NimbleLz4.MixProject do
   use Mix.Project
 
+  @version "0.1.0"
+
   def project do
     [
       app: :nimble_lz4,
-      version: "0.1.0",
-      elixir: "~> 1.13",
+      version: @version,
+      elixir: "~> 1.11",
       start_permanent: Mix.env() == :prod,
       compilers: Mix.compilers(),
       deps: deps(),
