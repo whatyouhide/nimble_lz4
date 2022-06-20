@@ -2,6 +2,7 @@ defmodule NimbleLz4.MixProject do
   use Mix.Project
 
   @version "0.1.0"
+  @source_url "https://github.com/whatyouhide/nimble_lz4"
 
   def project do
     [
@@ -13,14 +14,29 @@ defmodule NimbleLz4.MixProject do
       deps: deps(),
       rustler_crates: [
         nimblelz4: [mode: rustler_mode(Mix.env())]
-      ]
+      ],
+      package: package()
     ]
   end
 
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger]
+      extra_applications: []
+    ]
+  end
+
+  defp package do
+    [
+      files: [
+        "lib",
+        "native",
+        "checksum-*.exs",
+        "mix.exs"
+      ],
+      licenses: ["Apache-2.0"],
+      version: "v#{@version}",
+      source_url: @source_url
     ]
   end
 

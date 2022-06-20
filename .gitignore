@@ -26,3 +26,4 @@ nimble_lz4-*.tar
 /tmp/
 
 /priv/native/*.so
+/checksum-*.exs
