@@ -43,7 +43,9 @@ defmodule NimbleLz4.MixProject do
     [
       files: [
         "lib",
-        "native",
+        "native/nimblelz4/.cargo",
+        "native/nimblelz4/src",
+        "native/nimblelz4/Cargo*",
         "checksum-*.exs",
         "mix.exs"
       ],

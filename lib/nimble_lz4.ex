@@ -26,7 +26,7 @@ defmodule NimbleLZ4 do
   use RustlerPrecompiled,
     otp_app: :nimble_lz4,
     crate: "nimblelz4",
-    base_url: "https://github.com/whatyouhide/nimble_lz4/releases/downloads/v#{version}",
+    base_url: "https://github.com/whatyouhide/nimble_lz4/releases/download/v#{version}",
     force_build: System.get_env("NIMBLELZ4_FORCE_BUILD") == "true",
     version: version
 
