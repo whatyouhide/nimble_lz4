@@ -104,14 +104,15 @@ jobs:
           tarball_binary_path: "${binary}"
           smoke_test: "${binary} --version"
 
-      - name: Build
+      - name: Build with cross
         shell: bash
-        run: |
-          if [ "${{ matrix.job.use-cross }}" == "true" ]; then
-            cross build --release --target=${{ matrix.job.target }}
-          else
-            cargo build --release --target=${{ matrix.job.target }}
-          fi
+        if: "${{ matrix.job.use-cross }}"
+        run: cross build --release --target=${{ matrix.job.target }}
+
+      - name: Build with cargo
+        shell: bash
+        if: "${{ !matrix.job.use-cross }}"
+        run: cargo build --release --target=${{ matrix.job.target }}
 
       - name: Rename lib to the final name
         id: rename
