@@ -7,6 +7,10 @@ on:
   push:
     branches:
       - main
+    paths:
+      # Just run on main branch if "native" path changed.
+      - "native/**"
+    # Tags always run.
     tags:
       - "*"
   workflow_dispatch:
