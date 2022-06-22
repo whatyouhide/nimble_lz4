@@ -15,6 +15,10 @@ defp deps do
 end
 ```
 
+NimbleLZ4 requires OTP 23+ and Elixir 1.11+.
+
+### Native Code
+
 NimbleLZ4 uses [RustlerPrecompiled] to build precompiled version of the
 necessary Rust NIFs bindings for a variety of platforms, NIF versions, and
 operating systems. RustlerPrecompiled should automatically download the correct
