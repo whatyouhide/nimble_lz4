@@ -23,12 +23,25 @@ defmodule NimbleLZ4 do
 
   version = Mix.Project.config()[:version]
 
+  targets = ~w(
+    aarch64-apple-darwin
+    x86_64-apple-darwin
+    x86_64-unknown-linux-gnu
+    x86_64-unknown-linux-musl
+    arm-unknown-linux-gnueabihf
+    aarch64-unknown-linux-gnu
+    aarch64-unknown-linux-musl
+    x86_64-pc-windows-msvc
+    x86_64-pc-windows-gnu
+  )
+
   use RustlerPrecompiled,
     otp_app: :nimble_lz4,
     crate: "nimblelz4",
     base_url: "https://github.com/whatyouhide/nimble_lz4/releases/download/v#{version}",
     force_build: System.get_env("NIMBLELZ4_FORCE_BUILD") == "true",
-    version: version
+    version: version,
+    targets: targets
 
   @doc """
   Compresses the given binary.
