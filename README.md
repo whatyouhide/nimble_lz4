@@ -38,8 +38,8 @@ You can compress and decompress data.
 
 ```elixir
 iex> uncompressed = :crypto.strong_rand_bytes(10)
-iex> compressed = NimbleLZ4.compress(uncomppressed)
-iex> uncompressed == NimbleLZ4.decompress(compressed, _uncompressed_size = 10)
+iex> compressed = NimbleLZ4.compress(uncompressed)
+iex> {:ok, ^uncompressed} = NimbleLZ4.decompress(compressed, _uncompressed_size = 10)
 true
 ```
 
