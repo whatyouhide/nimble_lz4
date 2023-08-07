@@ -28,7 +28,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        nif: ["2.16", "2.15", "2.14"]
+        nif:
+          - "2.16"
+          - "2.15"
+          - "2.14"
         job:
           - target: arm-unknown-linux-gnueabihf
             os: ubuntu-20.04
@@ -58,7 +61,7 @@ jobs:
 
     steps:
       - name: Checkout source code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install prerequisites
         shell: bash
@@ -142,7 +145,7 @@ jobs:
           # Setup paths
           LIB_DIR="${CICD_INTERMEDIATES_DIR}/released-lib"
           mkdir -p "${LIB_DIR}"
-          LIB_NAME="${LIB_PREFIX}${{ env.PROJECT_NAME }}${LIB_SUFFIX}"
+          LIB_NAME="${LIB_PREFIX}${PROJECT_NAME}${LIB_SUFFIX}"
           LIB_PATH="${LIB_DIR}/${LIB_NAME}"
 
           # Copy the release build lib to the result location
