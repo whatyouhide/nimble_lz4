@@ -30,6 +30,7 @@ jobs:
       matrix:
         nif:
           - "2.15"
+          - "2.16"
         job:
           - target: arm-unknown-linux-gnueabihf
             os: ubuntu-20.04
