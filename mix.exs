@@ -61,8 +61,8 @@ defmodule NimbleLz4.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:rustler, "~> 0.25.0"},
-      {:rustler_precompiled, "~> 0.5.0"},
+      {:rustler, "~> 0.29.0"},
+      {:rustler_precompiled, "~> 0.6.2"},
 
       # Dev and test dependencies
       {:benchee, "~> 1.1", only: :dev},
