@@ -20,6 +20,15 @@ To **release** a new version of this library:
 
   1. Wait for CI to build all NIFs (with the new version).
 
+  1. Clean Rustler caches. If you don't do this, you can get issues with wrong
+     versions trying to be downloaded. To clean caches, find where RustlerPrecompiled stores caches with `:filename.basedir(:user_cache, "rustler_precompiled")` and wipe the directory.
+
+  1. After wiping the caches, run this to get a local checksum file:
+
+     ```shell
+     mix rustler_precompiled.download NimbleLZ4 --only-local
+     ```
+
   1. Run the "download" to download a file that must be included in the Hex
      package:
 
