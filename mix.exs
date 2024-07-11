@@ -8,7 +8,7 @@ defmodule NimbleLz4.MixProject do
     [
       app: :nimble_lz4,
       version: @version,
-      elixir: "~> 1.12",
+      elixir: "~> 1.13",
       start_permanent: Mix.env() == :prod,
       compilers: Mix.compilers(),
       deps: deps(),

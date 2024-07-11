@@ -14,7 +14,7 @@ env:
 jobs:
   test:
     name: Test (Elixir ${{ matrix.elixir }} | Erlang/OTP ${{ matrix.otp }})
-    runs-on: ubuntu-20.04
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
@@ -22,10 +22,13 @@ jobs:
           - otp: "27.0"
             elixir: "1.17"
             lint: true
+            os: ubuntu-latest
           - otp: "26.0"
             elixir: "1.15"
+            os: ubuntu-22.04
           - otp: "23.0"
-            elixir: "1.12"
+            elixir: "1.13"
+            os: ubuntu-20.04
 
     steps:
       - name: Clone repo
