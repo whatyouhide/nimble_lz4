@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.0.0
+
+This is just the 1.0 release, no changes! Yay.
+
 ## v0.1.4
 
   * Use DirtyCPU schedulers for NIFs. See the excellent explanation in [#7](https://github.com/whatyouhide/nimble_lz4/pull/7).

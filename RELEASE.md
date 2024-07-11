@@ -10,6 +10,8 @@ To **release** a new version of this library:
   1. Update the version in [`mix.exs`](./mix.exs) and update the
      [changelog](./CHANGELOG.md) file.
 
+  1. Commit.
+
   1. Release a *new tag*:
 
      ```shell
