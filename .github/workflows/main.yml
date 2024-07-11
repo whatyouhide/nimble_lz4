@@ -19,15 +19,17 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - otp: "27.0"
+            elixir: "1.17"
+            lint: true
           - otp: "26.0"
             elixir: "1.15"
-            lint: true
           - otp: "23.0"
-            elixir: "1.11.2"
+            elixir: "1.12"
 
     steps:
       - name: Clone repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install OTP and Elixir
         uses: erlef/setup-beam@v1
@@ -37,7 +39,7 @@ jobs:
 
       - name: Cache built dependencies
         id: cache-deps
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             deps
@@ -47,16 +49,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-mix-otp${{ matrix.otp }}-elixir${{ matrix.elixir }}-
 
-      - name: Install and compile dependencies
+      - name: Install dependencies
         if: steps.cache-deps.outputs.cache-hit != 'true'
-        run: mix do deps.get --only test, deps.compile
+        run: mix deps.get --only test
 
       - name: Check formatting
         run: mix format --check-formatted
         if: ${{ matrix.lint }}
 
-      - name: Check no unused dependencies
-        run: mix do deps.get, deps.unlock --check-unused
+      - name: Check no unused dependencies and up-to-date mix.lock
+        run: mix do deps.get --check-lock + deps.unlock --check-unused
         if: ${{ matrix.lint == 'true' && steps.cache-deps.outputs.cache-hit != 'true' }}
 
       - name: Compile with --warnings-as-errors
