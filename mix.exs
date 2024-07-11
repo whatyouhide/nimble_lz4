@@ -8,7 +8,7 @@ defmodule NimbleLz4.MixProject do
     [
       app: :nimble_lz4,
       version: @version,
-      elixir: "~> 1.11",
+      elixir: "~> 1.13",
       start_permanent: Mix.env() == :prod,
       compilers: Mix.compilers(),
       deps: deps(),
@@ -61,13 +61,13 @@ defmodule NimbleLz4.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:rustler, "~> 0.29.0"},
-      {:rustler_precompiled, "~> 0.6.2"},
+      {:rustler, "~> 0.34.0"},
+      {:rustler_precompiled, "~> 0.7.2"},
 
       # Dev and test dependencies
       {:benchee, "~> 1.1", only: :dev},
       {:ex_doc, "~> 0.28", only: :dev},
-      {:stream_data, "~> 0.5.0", only: :test}
+      {:stream_data, "~> 1.1", only: :test}
     ]
   end
 end
