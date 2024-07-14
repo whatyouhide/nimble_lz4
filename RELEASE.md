@@ -26,10 +26,10 @@ To **release** a new version of this library:
      versions trying to be downloaded. To clean caches, find where RustlerPrecompiled stores caches and wipe the directory. I usually do:
 
      ```shell
-     mix run -e ':filename.basedir(:user_cache, "rustler_precompiled")'
+     NIMBLELZ4_FORCE_BUILD=true mix run -e 'IO.puts(:filename.basedir(:user_cache, "rustler_precompiled") <> "/precompiled_nifs")' | xargs rm -vr
      ```
 
-      with `:filename.basedir(:user_cache, "rustler_precompiled")` and wipe the directory.
+      to wipe that directory.
 
   1. After wiping the caches, run this to get a local checksum file:
 
