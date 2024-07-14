@@ -23,7 +23,13 @@ To **release** a new version of this library:
   1. Wait for CI to build all NIFs (with the new version).
 
   1. Clean Rustler caches. If you don't do this, you can get issues with wrong
-     versions trying to be downloaded. To clean caches, find where RustlerPrecompiled stores caches with `:filename.basedir(:user_cache, "rustler_precompiled")` and wipe the directory.
+     versions trying to be downloaded. To clean caches, find where RustlerPrecompiled stores caches and wipe the directory. I usually do:
+
+     ```shell
+     mix run -e ':filename.basedir(:user_cache, "rustler_precompiled")'
+     ```
+
+      with `:filename.basedir(:user_cache, "rustler_precompiled")` and wipe the directory.
 
   1. After wiping the caches, run this to get a local checksum file:
 
