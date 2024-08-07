@@ -24,7 +24,7 @@ fn compress_frame<'a>(env: Env<'a>, iolist_to_compress: Term<'a>) -> Result<Term
     let binary_to_compress: Binary = Binary::from_iolist(iolist_to_compress).unwrap();
 
     let mut compressor = lz4_flex::frame::FrameEncoder::new(Vec::new());
-    std::io::Write::write(&mut compressor, &binary_to_compress.as_slice()).unwrap();
+    std::io::Write::write(&mut compressor, binary_to_compress.as_slice()).unwrap();
     let compressed = compressor.finish().unwrap();
 
     let mut erl_bin: OwnedBinary = OwnedBinary::new(compressed.len()).unwrap();
