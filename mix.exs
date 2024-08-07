@@ -67,7 +67,7 @@ defmodule NimbleLz4.MixProject do
       # Dev and test dependencies
       {:benchee, "~> 1.1", only: :dev},
       {:ex_doc, "~> 0.28", only: :dev},
-      {:stream_data, "~> 1.1", only: :test}
+      {:stream_data, "~> 1.1", only: [:dev, :test]}
     ]
   end
 end

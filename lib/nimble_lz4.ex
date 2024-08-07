@@ -46,4 +46,24 @@ defmodule NimbleLZ4 do
   def decompress(_binary, _uncompressed_size) do
     :erlang.nif_error(:nif_not_loaded)
   end
+
+  @doc """
+  Compresses the given binary using the [LZ4 frame
+  format](https://github.com/lz4/lz4/blob/dev/doc/lz4_Frame_format.md) into a frame.
+  """
+  @doc since: "1.1.0"
+  @spec compress_frame(binary()) :: binary()
+  def compress_frame(_binary) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  @doc """
+  Decompresses the given frame binary using the [LZ4 frame
+  format](https://github.com/lz4/lz4/blob/dev/doc/lz4_Frame_format.md).
+  """
+  @doc since: "1.1.0"
+  @spec decompress_frame(binary()) :: {:ok, binary()} | {:error, term()}
+  def decompress_frame(_binary) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
 end
