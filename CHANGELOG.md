@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.1.0
+
+  * Add `NimbleLZ4.compress_frame/1` and `NimbleLZ4.decompress_frame/1` to use with the [LZ4 frame format](https://github.com/lz4/lz4/blob/dev/doc/lz4_Frame_format.md).
+
 ## v1.0.0
 
 This is just the 1.0 release, no changes! Yay.

@@ -1,7 +1,7 @@
 defmodule NimbleLz4.MixProject do
   use Mix.Project
 
-  @version "1.0.0"
+  @version "1.1.0"
   @source_url "https://github.com/whatyouhide/nimble_lz4"
 
   def project do
