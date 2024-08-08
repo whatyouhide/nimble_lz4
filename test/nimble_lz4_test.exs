@@ -68,7 +68,9 @@ defmodule NimbleLZ4Test do
 
     test "with the wrong uncompressed size" do
       assert {:error, message} = NimbleLZ4.decompress(NimbleLZ4.compress("foo"), 2)
-      assert message == "provided output is too small for the decompressed data, actual 2, expected 3"
+
+      assert message ==
+               "provided output is too small for the decompressed data, actual 2, expected 3"
     end
   end
 
