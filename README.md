@@ -36,10 +36,21 @@ NIMBLELZ4_FORCE_BUILD=true mix deps.compile
 
 You can compress and decompress data.
 
+[Block format](https://github.com/lz4/lz4/blob/dev/doc/lz4_Block_format.md):
+
 ```elixir
 iex> uncompressed = :crypto.strong_rand_bytes(10)
 iex> compressed = NimbleLZ4.compress(uncompressed)
 iex> {:ok, ^uncompressed} = NimbleLZ4.decompress(compressed, _uncompressed_size = 10)
+true
+```
+
+[Frame format](https://github.com/lz4/lz4/blob/dev/doc/lz4_Frame_format.md) ([self-contained](https://android.googlesource.com/platform/external/lz4/+/HEAD/doc/lz4_Block_format.md#metadata)):
+
+```elixir
+iex> uncompressed = :crypto.strong_rand_bytes(10_000)
+iex> compressed = NimbleLZ4.compress_frame(uncompressed)
+iex> {:ok, ^uncompressed} = NimbleLZ4.decompress_frame(compressed)
 true
 ```
 

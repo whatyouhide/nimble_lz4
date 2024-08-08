@@ -8,7 +8,7 @@ use rustler::{Encoder, Env, Error, Term};
 #[rustler::nif(schedule = "DirtyCpu")]
 fn compress<'a>(env: Env<'a>, iolist_to_compress: Term<'a>) -> Result<Term<'a>, Error> {
     let binary_to_compress: Binary = Binary::from_iolist(iolist_to_compress).unwrap();
-    let compressed_slice = lz4_flex::compress(binary_to_compress.as_slice());
+    let compressed_slice = lz4_flex::block::compress(binary_to_compress.as_slice());
 
     let mut erl_bin: OwnedBinary = OwnedBinary::new(compressed_slice.len()).unwrap();
 
@@ -42,7 +42,7 @@ fn decompress<'a>(
     binary_to_decompress: Binary,
     uncompressed_size: usize,
 ) -> Result<Term<'a>, Error> {
-    match lz4_flex::decompress(binary_to_decompress.as_slice(), uncompressed_size) {
+    match lz4_flex::block::decompress(binary_to_decompress.as_slice(), uncompressed_size) {
         Ok(decompressed_vec) => {
             let mut erl_bin: OwnedBinary = OwnedBinary::new(decompressed_vec.len()).unwrap();
             erl_bin

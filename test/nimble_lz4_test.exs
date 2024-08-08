@@ -54,7 +54,7 @@ defmodule NimbleLZ4Test do
     end
 
     test "with iodata" do
-      assert NimbleLZ4.compress_frame([]) == ""
+      assert NimbleLZ4.compress_frame([]) == "\x04\"M\x18`@\x82\0\0\0\0"
 
       assert NimbleLZ4.compress_frame([?f, [[[?o]]], "o"]) ==
                "\x04\"M\x18`@\x82\x03\0\0\x80foo\0\0\0\0"
@@ -67,8 +67,10 @@ defmodule NimbleLZ4Test do
     end
 
     test "with the wrong uncompressed size" do
-      assert {:error, message} = NimbleLZ4.decompress(NimbleLZ4.compress("foo"), 6)
-      assert message == "the expected decompressed size differs, actual 3, expected 6"
+      assert {:error, message} = NimbleLZ4.decompress(NimbleLZ4.compress("foo"), 2)
+
+      assert message ==
+               "provided output is too small for the decompressed data, actual 2, expected 3"
     end
   end
 
