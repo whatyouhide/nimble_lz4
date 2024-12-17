@@ -1,4 +1,4 @@
-defmodule NimbleLz4.MixProject do
+defmodule NimbleLZ4.MixProject do
   use Mix.Project
 
   @version "1.1.0"
