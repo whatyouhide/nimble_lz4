@@ -15,7 +15,7 @@ defp deps do
 end
 ```
 
-NimbleLZ4 requires OTP 23+ and Elixir 1.11+.
+NimbleLZ4 requires OTP 24+ and Elixir 1.15+.
 
 ### Native Code
 

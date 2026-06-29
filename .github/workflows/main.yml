@@ -24,10 +24,10 @@ jobs:
             lint: true
             os: ubuntu-latest
           - otp: "26.0"
-            elixir: "1.15"
+            elixir: "1.16"
             os: ubuntu-22.04
           - otp: "24.3"
-            elixir: "1.13"
+            elixir: "1.15"
             os: ubuntu-22.04
 
     steps:
