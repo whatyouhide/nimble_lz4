@@ -10,8 +10,15 @@ path = "src/lib.rs"
 crate-type = ["cdylib"]
 
 [dependencies]
-rustler = { version = "0.38", default-features = false, features = [
-    "derive",
-    "nif_version_2_15",
-] }
+rustler = { version = "0.38", default-features = false, features = ["derive"] }
 lz4_flex = { version = "0.13" }
+
+# The supported NIF version is selected through these passthrough features
+# rather than hardcoded on the `rustler` dependency. This is required since
+# Rustler v0.30 so that `rustler_precompiled` can build one artifact per NIF
+# version (it builds with `--no-default-features --features nif_version_X`).
+# See https://hexdocs.pm/rustler_precompiled/precompilation_guide.html
+[features]
+default = ["nif_version_2_15"]
+nif_version_2_15 = ["rustler/nif_version_2_15"]
+nif_version_2_16 = ["rustler/nif_version_2_16"]
