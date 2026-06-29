@@ -77,8 +77,4 @@ fn load(_: Env, _: Term) -> bool {
     true
 }
 
-rustler::init!(
-    "Elixir.NimbleLZ4",
-    [compress, compress_frame, decompress, decompress_frame],
-    load = load
-);
+rustler::init!("Elixir.NimbleLZ4", load = load);

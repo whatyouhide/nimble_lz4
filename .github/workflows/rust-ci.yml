@@ -13,7 +13,7 @@ on:
 jobs:
   lint_rust:
     name: Lint Rust
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         manifest:
@@ -21,24 +21,15 @@ jobs:
 
     steps:
       - name: Check out this repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install Rust
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@stable
         with:
-          profile: minimal
-          toolchain: nightly
           components: rustfmt, clippy
-          override: true
 
       - name: Check if code is formatted
-        uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --manifest-path=${{ matrix.manifest }} --all -- --check
+        run: cargo fmt --manifest-path=${{ matrix.manifest }} --all -- --check
 
       - name: Run clippy
-        uses: actions-rs/cargo@v1
-        with:
-          command: clippy
-          args: --manifest-path=${{ matrix.manifest }} -- -Dwarnings
+        run: cargo clippy --manifest-path=${{ matrix.manifest }} -- -Dwarnings

@@ -20,15 +20,15 @@ jobs:
       matrix:
         include:
           - otp: "27.0"
-            elixir: "1.17"
+            elixir: "1.18"
             lint: true
             os: ubuntu-latest
           - otp: "26.0"
             elixir: "1.15"
             os: ubuntu-22.04
-          - otp: "23.0"
+          - otp: "24.3"
             elixir: "1.13"
-            os: ubuntu-20.04
+            os: ubuntu-22.04
 
     steps:
       - name: Clone repo
