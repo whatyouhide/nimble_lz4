@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.2.0
+
+  * Add a streaming API for compressing and decompressing large or incremental payloads using the [LZ4 frame format](https://github.com/lz4/lz4/blob/dev/doc/lz4_Frame_format.md), with memory usage bounded regardless of the total size of the data:
+    * High-level: `NimbleLZ4.compress_stream/1` and `NimbleLZ4.decompress_stream/1`, which work with any `Enumerable`.
+    * Low-level: `NimbleLZ4.compress_stream_new/0`, `NimbleLZ4.compress_stream_update/2`, `NimbleLZ4.compress_stream_finish/1`, and their `decompress_*` counterparts.
+
 ## v1.1.0
 
   * Add `NimbleLZ4.compress_frame/1` and `NimbleLZ4.decompress_frame/1` to use with the [LZ4 frame format](https://github.com/lz4/lz4/blob/dev/doc/lz4_Frame_format.md).
