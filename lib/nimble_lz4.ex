@@ -2,8 +2,40 @@ defmodule NimbleLZ4 do
   @moduledoc """
   [LZ4](https://github.com/lz4/lz4) compression and decompression.
 
-  This functionality is built on top of native (Rust) NIFs. There is no
-  streaming functionality, everything is done in memory.
+  This functionality is built on top of native (Rust) NIFs.
+
+  ## One-shot vs Streaming
+
+  For small payloads that fit comfortably in memory, use the one-shot functions
+  (`compress/1`, `decompress/2`, `compress_frame/1`, `decompress_frame/1`), which
+  compress or decompress a whole binary at once.
+
+  For large payloads, or data that arrives incrementally (such as a file being
+  read in chunks or a network stream), use the **streaming API**. It uses the
+  [LZ4 frame format](https://github.com/lz4/lz4/blob/dev/doc/lz4_Frame_format.md)
+  and keeps memory usage bounded regardless of the total size of the data.
+
+  The easiest way to use it is through `compress_stream/1` and
+  `decompress_stream/1`, which turn an enumerable of `t:iodata/0` chunks into a
+  lazy stream of binary chunks:
+
+      "large_file.txt"
+      |> File.stream!(2048, [])
+      |> NimbleLZ4.compress_stream()
+      |> Stream.into(File.stream!("large_file.lz4"))
+      |> Stream.run()
+
+  And to decompress it back:
+
+      "large_file.lz4"
+      |> File.stream!(2048, [])
+      |> NimbleLZ4.decompress_stream()
+      |> Enum.into("")
+
+  If you need finer-grained control over the lifecycle of a stream (for example,
+  to interleave compression with other work), use the lower-level
+  `compress_stream_new/0`, `compress_stream_update/2`, and
+  `compress_stream_finish/1` functions (and their `decompress_*` counterparts).
 
   ## Uncompressed Size
 
@@ -29,6 +61,18 @@ defmodule NimbleLZ4 do
     base_url: "https://github.com/whatyouhide/nimble_lz4/releases/download/v#{version}",
     force_build: System.get_env("NIMBLELZ4_FORCE_BUILD") == "true",
     version: version
+
+  @typedoc """
+  A handle to a streaming compressor, created by `compress_stream_new/0`.
+  """
+  @typedoc since: "1.2.0"
+  @type compressor() :: reference()
+
+  @typedoc """
+  A handle to a streaming decompressor, created by `decompress_stream_new/0`.
+  """
+  @typedoc since: "1.2.0"
+  @type decompressor() :: reference()
 
   @doc """
   Compresses the given binary.
@@ -64,6 +108,164 @@ defmodule NimbleLZ4 do
   @doc since: "1.1.0"
   @spec decompress_frame(binary()) :: {:ok, binary()} | {:error, term()}
   def decompress_frame(_binary) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  @doc """
+  Lazily compresses an enumerable of `t:iodata/0` *chunks* into a stream of
+  compressed binary chunks.
+
+  The resulting stream produces a single [LZ4
+  frame](https://github.com/lz4/lz4/blob/dev/doc/lz4_Frame_format.md). Memory
+  usage stays bounded regardless of the total size of the input.
+
+  Some emitted chunks may be empty binaries: LZ4 buffers data internally and
+  only emits a compressed block once it has accumulated enough input.
+
+  ## Examples
+
+      iex> chunks = ["hello ", "world"]
+      iex> compressed = chunks |> NimbleLZ4.compress_stream() |> Enum.into("")
+      iex> NimbleLZ4.decompress_frame(compressed)
+      {:ok, "hello world"}
+
+  """
+  @doc since: "1.2.0"
+  @spec compress_stream(Enumerable.t(iodata())) :: Enumerable.t(binary())
+  def compress_stream(enumerable) do
+    Stream.transform(
+      enumerable,
+      fn -> compress_stream_new() end,
+      fn chunk, compressor -> {[compress_stream_update(compressor, chunk)], compressor} end,
+      fn compressor -> {[compress_stream_finish(compressor)], compressor} end,
+      fn _compressor -> :ok end
+    )
+  end
+
+  @doc """
+  Lazily decompresses an enumerable of `t:iodata/0` chunks (a single LZ4 frame,
+  possibly split across chunks) into a stream of decompressed binary chunks.
+
+  This is the counterpart of `compress_stream/1`. The chunks of the input
+  enumerable don't need to align with the frame's internal block boundaries: you
+  can feed the frame in arbitrarily-sized pieces.
+
+  Raises an error if the data is not a valid LZ4 frame.
+
+  ## Examples
+
+      iex> compressed = NimbleLZ4.compress_frame("hello world")
+      iex> [compressed] |> NimbleLZ4.decompress_stream() |> Enum.into("")
+      "hello world"
+
+  """
+  @doc since: "1.2.0"
+  @spec decompress_stream(Enumerable.t()) :: Enumerable.t()
+  def decompress_stream(enumerable) do
+    Stream.transform(
+      enumerable,
+      fn -> decompress_stream_new() end,
+      fn chunk, decompressor ->
+        {[unwrap_decompressed(decompress_stream_update(decompressor, chunk))], decompressor}
+      end,
+      fn decompressor ->
+        {[unwrap_decompressed(decompress_stream_finish(decompressor))], decompressor}
+      end,
+      fn _decompressor -> :ok end
+    )
+  end
+
+  defp unwrap_decompressed({:ok, binary}) do
+    binary
+  end
+
+  defp unwrap_decompressed({:error, reason}) do
+    raise "failed to decompress LZ4 stream: #{reason}"
+  end
+
+  @doc """
+  Creates a new streaming compressor.
+
+  Returns an opaque handle to be used with `compress_stream_update/2` and
+  `compress_stream_finish/1`. The handle is backed by a native resource that is
+  automatically cleaned up when it is garbage-collected, so it is safe to
+  discard a compressor without calling `compress_stream_finish/1` (although doing
+  so means the produced frame will be incomplete).
+
+  See `compress_stream/1` for a higher-level API.
+  """
+  @doc since: "1.2.0"
+  @spec compress_stream_new() :: compressor()
+  def compress_stream_new do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  @doc """
+  Feeds a chunk of `t:iodata/0` into a streaming compressor.
+
+  Returns a binary with the compressed data produced so far. This may be an
+  empty binary if LZ4 has buffered the input internally without emitting a
+  complete block yet.
+  """
+  @doc since: "1.2.0"
+  @spec compress_stream_update(compressor(), iodata()) :: binary()
+  def compress_stream_update(_compressor, _iodata) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  @doc """
+  Finalizes a streaming compressor.
+
+  Flushes any remaining buffered data and writes the frame's end marker,
+  returning the final binary chunk. After this call the compressor must not be
+  used again.
+  """
+  @doc since: "1.2.0"
+  @spec compress_stream_finish(compressor()) :: binary()
+  def compress_stream_finish(_compressor) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  @doc """
+  Creates a new streaming decompressor.
+
+  Returns an opaque handle to be used with `decompress_stream_update/2` and
+  `decompress_stream_finish/1`. The handle is backed by a native resource that
+  is automatically cleaned up when it is garbage-collected.
+
+  See `decompress_stream/1` for a higher-level API.
+  """
+  @doc since: "1.2.0"
+  @spec decompress_stream_new() :: decompressor()
+  def decompress_stream_new do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  @doc """
+  Feeds a chunk of compressed `t:iodata/0` into a streaming decompressor.
+
+  Returns `{:ok, binary}` with the decompressed data available so far, which may
+  be an empty binary if the decompressor needs more input before it can emit the
+  next block. Returns `{:error, reason}` if the data is not a valid LZ4 frame.
+  """
+  @doc since: "1.2.0"
+  @spec decompress_stream_update(decompressor(), iodata()) ::
+          {:ok, binary()} | {:error, term()}
+  def decompress_stream_update(_decompressor, _iodata) do
+    :erlang.nif_error(:nif_not_loaded)
+  end
+
+  @doc """
+  Finalizes a streaming decompressor.
+
+  Signals that no more input is coming and returns `{:ok, binary}` with any
+  remaining decompressed data. Returns `{:error, reason}` if the frame was
+  incomplete or otherwise invalid. After this call the decompressor must not be
+  used again.
+  """
+  @doc since: "1.2.0"
+  @spec decompress_stream_finish(decompressor()) :: {:ok, binary()} | {:error, term()}
+  def decompress_stream_finish(_decompressor) do
     :erlang.nif_error(:nif_not_loaded)
   end
 end

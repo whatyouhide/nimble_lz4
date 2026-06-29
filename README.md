@@ -54,5 +54,31 @@ iex> {:ok, ^uncompressed} = NimbleLZ4.decompress_frame(compressed)
 true
 ```
 
+### Streaming
+
+For large payloads or data that arrives incrementally, you can compress and
+decompress lazily without holding everything in memory. `compress_stream/1` and
+`decompress_stream/1` turn an enumerable of `iodata` chunks into a lazy stream
+of binary chunks (using the LZ4 frame format):
+
+```elixir
+# Compress a large file chunk-by-chunk.
+"large_file.txt"
+|> File.stream!(2048, [])
+|> NimbleLZ4.compress_stream()
+|> Stream.into(File.stream!("large_file.lz4"))
+|> Stream.run()
+
+# And decompress it back.
+"large_file.lz4"
+|> File.stream!(2048, [])
+|> NimbleLZ4.decompress_stream()
+|> Enum.into("")
+```
+
+There's also a lower-level resource-based API
+(`compress_stream_new/0`, `compress_stream_update/2`, `compress_stream_finish/1`
+and their `decompress_*` counterparts) for finer-grained control.
+
 [LZ4]: https://github.com/lz4/lz4
 [RustlerPrecompiled]: https://github.com/philss/rustler_precompiled
