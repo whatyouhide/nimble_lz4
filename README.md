@@ -10,7 +10,7 @@ Add this to your dependencies in `mix.exs`.
 defp deps do
   [
     # ...,
-    {:nimble_lz4, "~> 0.1.0"}
+    {:nimble_lz4, "~> 1.2"}
   ]
 end
 ```
